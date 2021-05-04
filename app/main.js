@@ -1,85 +1,287 @@
+//api
 
-const poke_container = document.getElementById('poke_container');
-const pokemons_number = 150;
-const colors = {
-    fire: '#FDDFDF',
-    grass: '#DEFDE0',
-    electric: '#FCF7DE',
-    water: '#DEF3FD',
-    ground: '#f8d5a3',
-    rock: '#d5d5d4',
-    fairy: '#fceaff',
-    poison: '#bca8bd',
-    bug: '#98d7a5',
-    dragon: '#a494f4',
-    psychic: '#eaeda1',
-    flying: '#97b3e6',
-    fighting: '#E6E0D4',
-    normal: '#F5F5F5',
-};
+
+const API_URL = `https://api.nasa.gov/insight_weather/?api_key=DEMO_KEY&feedtype=json&ver=1.0`
+const API2_URL = `https://mars-weather-rems.netlify.app/rems.json`
 
 
 
-const main_types = Object.keys(colors);
+
+//animacion next 7 days
+
+const previousWeatherToggle = document.querySelector('.show-previous-weather');
+const previousWeather = document.querySelector('.previous-weather')
+
+//
+const currentSolElement = document.querySelector('[data-current-sol]')
+const currentDateElement = document.querySelector('[data-current-date]')
+const currentTempHighElement = document.querySelector('[data-current-temp-high]')
+const currentTempLowElement = document.querySelector('[data-current-temp-low]')
+
+
+//
+const currentAVElement = document.querySelector('[data-current-av]')
+const currentCTElement = document.querySelector('[data-current-ct]')
 
 
 
-const fetchPokemons = async () => {
-    for (let i = 1; i <= pokemons_number; i++) {
-        await getPokemon(i);
+
+
+
+//wind seccion
+//const windSpeedElement = document.querySelector('[data-wind-speed')
+//const windDirectionText = document.querySelector('[data-wind-direction')
+//const windDirectionArrow = document.querySelector('[data-wind-direction-arrow')
+
+const previousSolTemplate = document.querySelector('[data-previous-sol-template]')
+const previousSolContainer = document.querySelector('[data-previous-sols]')
+
+
+
+
+previousWeatherToggle.addEventListener('click', () => {
+    previousWeather.classList.toggle('show-weather')
+})
+
+
+
+
+//CONSEGUIR TIEMPO EN MARTE
+
+let selectedSolIndex
+
+
+
+getWeather().then(sols => {
+    selectedSolIndex = sols.length - 1
+    displaySelectedSol(sols)
+    displayPreviousSols(sols)
+
+
+})
+
+
+function displaySelectedSol(sols) {
+    const selectedSol = sols[selectedSolIndex]
+    currentSolElement.innerText = selectedSol.sol
+
+    currentDateElement.innerText = displayDate(selectedSol.date)
+    currentTempHighElement.innerText = displayTemperature(selectedSol.maxTemp)
+    currentTempLowElement.innerText = displayTemperature(selectedSol.minTemp)
+
+    //
+    currentAVElement.innerText = displayTemperature(selectedSol.av)
+    currentCTElement.innerText = displayTemperature(selectedSol.ct)
+    
+    
+    
+   
+
+
+
+
+
+    //viento
+    //windSpeedElement.innerText = displayTemperature(selectedSol.windSpeed)
+    //windDirectionArrow.style.setProperty('--direction',`${selectedSol.windDirectionDegrees} deg`)
+    //windDirectionText.innerText = selectedSol.windDirectionCardinal
+
+
+}
+
+
+
+//funcion para acortar la fecha
+
+function displayDate(date) {
+    return date.toLocaleDateString(
+        undefined,
+        { day: 'numeric', month: 'long' }
+    )
+}
+
+//funcion acortar temperaturas
+
+function displayTemperature(temperature) {
+    return Math.round(temperature)
+}
+
+//viento
+//function displaySpeed(speed){
+//return Math.round(speed)
+//}
+
+
+
+
+//funcion PREVIOUS DAYS
+
+function displayPreviousSols(sols) {
+    previousSolContainer.innerHTML = ''
+    sols.forEach((solData, index) => {
+        const solContainer = previousSolTemplate.content.cloneNode(true)
+        solContainer.querySelector('[data-sol]').innerText = solData.sol
+        solContainer.querySelector('[data-date]').innerText = displayDate(solData.date)
+        solContainer.querySelector('[data-temp-high]').innerText = displayTemperature(solData.maxTemp)
+        solContainer.querySelector('[data-temp-low]').innerText = displayTemperature(solData.minTemp)
+
+
+
+
+        
+        previousSolContainer.appendChild(solContainer)
+
+    })
+}
+
+//conseguir datos API
+
+function getWeather() {
+    return fetch(API_URL)
+        .then(res => res.json())
+        .then(data => {
+            const {
+                sol_keys,
+                validity_checks,
+                ...solData
+
+            } = data
+            return Object.entries(solData).map(([sol, data]) => {
+                return {
+                    sol: sol,
+                    maxTemp: data.PRE.mx,
+                    minTemp: data.PRE.mn,
+                    windDirection: data.WD.most_common,
+                    date: new Date(data.First_UTC),
+
+                    av: data.PRE.av,
+                    ct: data.PRE.ct,
+                    
+                    
+                    
+
+                    
+
+
+                }
+
+            })
+
+        })
+       
+        
+    
+
+
+}
+
+
+
+
+
+
+
+// MENU LATERAL
+
+window.addEventListener("load", () => {
+    document.body.classList.remove("preload");
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const nav = document.querySelector(".nav");
+
+    document.querySelector("#btnNav").addEventListener("click", () => {
+        nav.classList.add("nav--open");
+    });
+
+    document.querySelector(".nav__overlay").addEventListener("click", () => {
+        nav.classList.remove("nav--open");
+    });
+});
+
+
+
+//guardar temperaturas
+
+
+window.onload = function () {
+    let users;
+    /** Crear / conectar bbdd */
+    let db = new PouchDB('usuarios');
+
+    /** Pintar la lista de usuarios */
+    renderUsers();
+
+    /** Escuechar eventos de los botones */
+    let btnAdd = document.querySelector("#add");
+    btnAdd.addEventListener("click", addUser, false);
+
+
+    /** Función para añadir usuarios */
+    function addUser() {
+        let name = document.querySelector("#nombre");
+        let age = document.querySelector("#edad");
+        if (name.value != "" && age.value != "") {
+            let nextUser = users.length + 1;
+
+            // Añadir registro a la BBDD
+            let doc = {
+                "_id": `usuario${nextUser}`,
+                "name": name.value,
+                "age": age.value
+            };
+            db.put(doc); //añade registro nuevo 
+
+            renderUsers();
+            name.value = "";
+            age.value = "";
+        }
     }
-};
 
-const getPokemon = async id => {
-    const url = `https://pokeapi.co/api/v2/pokemon/${id}`;
-    const res = await fetch(url);
-    const pokemon = await res.json();
-    createPokemonCard(pokemon);
-};
+    /** Función para pintar la lista de usuarios */
+    function renderUsers() {
+        let lista = document.querySelector(".listaUsers");
+        lista.innerHTML = "";
+        //Retrieving all the documents in PouchDB
+        db.allDocs({ include_docs: true }, function (err, docs) {
+            if (err) {
+                return console.log(err);
+            } else {
+                users = docs.rows;
+                users.forEach(element => {
+                    let user = `
+                                <article>
+                                   <div><span>Sol</span>${element.doc.name}</div>
+                                   <div><span>High Temp</span>${element.doc.age}</div>
+                                   <div><span>Low Temp</span>${element.doc.age}</div>
 
+                                   
 
+                                   
 
-//funcion pokemon card
-
-function createPokemonCard(pokemon) {
-    const pokemonEl = document.createElement('div');
-    pokemonEl.classList.add('pokemon');
-
-    const poke_types = pokemon.types.map(type => type.type.name);
-
-    const type = main_types.find(type => poke_types.indexOf(type) > -1);
-
-    const name = pokemon.name[0].toUpperCase() + pokemon.name.slice(1);
-
-    const color = colors[type];
-    pokemonEl.style.backgroundColor = color;
+                                </article>`;
 
 
+                    lista.innerHTML += user;
+                });
 
-    const pokeInnerHTML = `
-      <div class="img-container">
-          <img src="https://pokeres.bastionbot.org/images/pokemon/${pokemon.id}.png"/>
-      </div>
+            }
+        });
+    }
 
-      <div class"info">
-         <span class="number">#${pokemon.id.toString().padStart(3, '0')}</span>
-         <h3 class="name">${name}</h3>
-         <small class="type"></span>${type}</span></small>
-      </div>
+
+
     
 
-      
-    
-
-    `;
-
-    pokemonEl.innerHTML = pokeInnerHTML;
-
-    poke_container.appendChild(pokemonEl);
 
 };
 
-fetchPokemons();
+
+
+//borrar temperaturas
+
+
+
 
 
 

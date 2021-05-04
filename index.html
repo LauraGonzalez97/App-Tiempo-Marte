@@ -7,29 +7,203 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <meta name="theme-color" content="#fafafa" />
 
-    <title>PokeDex</title>
+    <title>Mars Weather App</title>
 
     <meta name="description" content="" />
     <link rel="apple-touch-icon" href="./assets/img/icon.png" />
     <link rel="icon" href="./assets/img/favicon.png" />
     <link rel="stylesheet" href="./assets/sass/main.css" />
     <link href="./assets/sass/main.css.map" />
+
+    <script src="app/pouchdb-7.2.1.min.js"></script>
+
+
+
+
+
+
 </head>
 
-<div style="background-image: url('assets/img/fondopokemon.png');">
 
-    <body>
 
+<body class="preload">
+
+    <header class="header">
+        <button class="header__button" id="btnNav" type="button">
+            <span class="fa fa-bars"></span>
+        </button>
+    </header>
+    <nav class="nav">
+        <div class="nav__links">
+
+            <main class="caja">
+                <form onsubmit="event.preventDefault();">
+                    <label for="nombre">Sol</label>
+                    <input type="text" name="high" id="high" required="required">
+                    <label for="high">High Temp</label>
+                    <input type="number" name="low" id="low" required="required">
+                    <label for="low">Low Temp</label>
+                    <input type="number" name="edad" id="edad" required="required">
+                    <input type="submit" class="boton_temp" id="add" value="Add temperatures">
+                </form>
+
+                <section class="listaUsers">
+                    
+                    
+
+                </section>
+                <!--<a href="#">
+                    <span class="reset">Delete Temperatures</span> 
+                </a>-->
+            </main>
+
+
+
+        </div>
+        <div class="nav__overlay"></div>
+    </nav>
+
+
+
+
+
+
+    <body background="assets/img/fondo_app_marte2.png" style="background-repeat: no-repeat;"></body>
+
+
+
+    </ul>
+
+    <h1>Mars Weather App</h1>
+
+
+
+    <div class="marte">
+        <img src="assets/img/marte_acuarela.png"></img>
+    </div>
+
+
+
+    <div class="verticalLine"></div>
+
+
+    <main class="mars-current-weather">
+
+        <div class="date">
+            <h2 class="section-title section-title--date" style="font-size: 3rem;margin-top: 15px;">
+                Sol
+
+            </h2>
+            <h2 class="section-title section-title--date2" style="font-size: 5rem;margin-top: -4rem;">
+                <span data-current-sol></span>
+            </h2>
+            <p class="date__day" style="margin-top: -5.5rem;font-size: 30px;">
+                <span data-current-date></span>
+            </p>
+
+        </div>
+
+        <div class="temp">
+            <h2 class="section-title"></h2>
+            <p class="reading">
+                High:
+                <span data-current-temp-high></span>
+                ºC
+            </p>
+            <p class="reading">
+                Low:
+                <span data-current-temp-low></span>
+                ºC
+            </p>
+        </div>
+
+        <div class="datos_guardados">
+            <p class="reading">
+                AV:
+                <span data-current-av></span>
+                
+            </p>
+            <p class="reading">
+                CT:
+                <span data-current-ct></span>
+                
+            </p>
+        </div>
         
-        <h1>PokeDex</h1>
 
-        <div id="poke_container" class="poke-container"></div>
+        <!--<div class="wind">
+            <p class="section-title">Wind</p>
+            <p class="reading">
+                <span data-wind-speed></span>
+                kph
+            </p>
 
-        <script src="./app/main.js"></script>
+            <div class="wind__direction">
+                <p class="sr-only" data-wind-direction-arrow></p>
+                <div class="wind__arrow" data-wind-direction-arrow></div>
+            </div>
+        </div>-->
 
 
 
-    </body>
+    </main>
+
+
+
+
+    <div class="previous-weather">
+
+        <button for="weather-toggle" class="show-previous-weather"><span>&#8593;</span> <span class="sr-only">Show
+                previous weather</span></button>
+
+
+
+        <div class="titulo">
+            <h2 class="main-title previous-weather__title">Previous days</h2>
+        </div>
+
+
+
+        <div class="previous-days" data-previous-sols></div>
+
+
+    </div>
+
+    <template data-previous-sol-template>
+        <div class="previous-day">
+            <h3 class="previous-day__sol">
+                <span data-sol></span>
+                <img src="assets/img/iconos tiempo/sun_clouds2.png"></img>
+            </h3>
+            <p class="previous-day__date" data-date></p>
+            <p class="previous-day__temp">
+                High:
+                <span data-temp-high></span>
+                °C<span data-temp-unit></span>
+            </p>
+            <p class="previous-day__temp_2">
+                Low:
+                <span data-temp-low></span>
+                °C<span data-temp-unit></span>
+            </p>
+
+        </div>
+
+    </template>
+
+
+
+
+
+
+
+
+    <script src="./app/main.js"></script>
+
+
+
+
+</body>
 
 
 
